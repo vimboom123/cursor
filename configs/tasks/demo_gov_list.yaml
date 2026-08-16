@@ -1,0 +1,18 @@
+name: demo_gov_list
+html_file: ../../fixtures/demo_gov_list.html
+allow_write: false
+steps:
+  - action: wait
+    selector: table.matter-list
+  - action: extract
+    fields:
+      - name: page_title
+        strategy: css
+        selector: h1.page-title
+      - name: matters
+        strategy: table
+        selector: table.matter-list
+      - name: scan_text
+        strategy: ocr_selector
+        selector: img.scan-doc
+        required: false
