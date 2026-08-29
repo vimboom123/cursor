@@ -9,7 +9,8 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from dykb.pipeline import IngestError, ingest
+from dykb.errors import DouyinLinkError, IngestError
+from dykb.pipeline import ingest
 from dykb.qa import ask
 from dykb.seed import seed_examples
 from dykb.store import Store
@@ -63,7 +64,7 @@ def create_app(data_dir: Path) -> FastAPI:
         )
 
     @app.get("/ingest", response_class=HTMLResponse)
-    async def ingest_page(request: Request, error: str = "", ok: str = ""):
+    async def ingest_page(request: Request, error: str = "", ok: str = "", hint: str = ""):
         return templates.TemplateResponse(
             request,
             "ingest.html",
@@ -71,6 +72,7 @@ def create_app(data_dir: Path) -> FastAPI:
                 "nav": "ingest",
                 "error": error,
                 "ok": ok,
+                "hint": hint,
                 "collections": store().collections(),
             },
         )
@@ -81,6 +83,7 @@ def create_app(data_dir: Path) -> FastAPI:
         transcript: str = Form(""),
         author: str = Form(""),
         source_url: str = Form(""),
+        file_url: str = Form(""),
         tags: str = Form(""),
         collection: str = Form("默认合集"),
         notes: str = Form(""),
@@ -112,10 +115,13 @@ def create_app(data_dir: Path) -> FastAPI:
                 video_path=video_path,
                 author=author,
                 source_url=source_url,
+                file_url=file_url,
                 tags=[t.strip() for t in tags.split(",") if t.strip()],
                 notes=notes,
                 collection=collection,
             )
+        except DouyinLinkError:
+            return RedirectResponse("/ingest?hint=douyin", status_code=303)
         except IngestError as exc:
             return RedirectResponse("/ingest?error=" + quote(str(exc)), status_code=303)
         return RedirectResponse(f"/videos/{record.id}", status_code=303)

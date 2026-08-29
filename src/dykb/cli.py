@@ -5,7 +5,8 @@ import json
 import sys
 from pathlib import Path
 
-from dykb.pipeline import IngestError, ingest
+from dykb.errors import IngestError
+from dykb.pipeline import ingest
 from dykb.qa import ask
 from dykb.seed import seed_examples
 from dykb.store import Store
@@ -36,6 +37,12 @@ def main(argv: list[str] | None = None) -> int:
     p_ing.add_argument("--text", help="直接传入口播文本")
     p_ing.add_argument("--author", default="")
     p_ing.add_argument("--url", default="", help="仅作引用的抖音分享链接，不会下载")
+    p_ing.add_argument(
+        "--from-url",
+        dest="file_url",
+        default="",
+        help="你自己托管的 .srt/.txt/.mp4 直链；拒绝抖音分享链接",
+    )
     p_ing.add_argument("--tags", default="", help="逗号分隔")
     p_ing.add_argument("--collection", default="默认合集")
     p_ing.add_argument("--notes", default="")
@@ -117,6 +124,7 @@ def _ingest(store: Store, args: argparse.Namespace) -> int:
             video_path=Path(args.video) if args.video else None,
             author=args.author,
             source_url=args.url,
+            file_url=getattr(args, "file_url", ""),
             tags=[t.strip() for t in args.tags.split(",") if t.strip()],
             notes=args.notes,
             collection=args.collection,

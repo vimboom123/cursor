@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from dykb.pipeline import IngestError, ingest
+from dykb.errors import DouyinLinkError, IngestError
+from dykb.pipeline import ingest
 from dykb.qa import ask
 from dykb.seed import seed_examples
 from dykb.store import Store
@@ -34,6 +35,14 @@ def test_ingest_requires_text(tmp_path: Path) -> None:
     store = Store(tmp_path)
     with pytest.raises(IngestError):
         ingest(store, title="空")
+    store.close()
+
+
+def test_ingest_douyin_link_alone_explains(tmp_path: Path) -> None:
+    store = Store(tmp_path)
+    with pytest.raises(DouyinLinkError) as exc:
+        ingest(store, title="只有链接", source_url="https://v.douyin.com/AbC123xy/")
+    assert "剪映" in str(exc.value)
     store.close()
 
 

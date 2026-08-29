@@ -8,6 +8,34 @@ from urllib.parse import urlparse
 _VIDEO_ID = re.compile(r"/(?:video|note|share/video)/(\d+)")
 _SHORT = re.compile(r"^[A-Za-z0-9._-]+$")
 
+DOUYIN_HOST_SUFFIXES = (
+    "douyin.com",
+    "iesdouyin.com",
+    "douyinvod.com",
+    "byteimg.com",
+    "bytedance.com",
+    "tiktok.com",
+    "tiktokcdn.com",
+    "tiktokv.com",
+)
+
+
+def hostname(url_or_host: str) -> str:
+    raw = (url_or_host or "").strip()
+    if "://" in raw:
+        return (urlparse(raw).hostname or "").lower()
+    return raw.split("/")[0].split(":")[0].lower()
+
+
+def is_douyin_host(host: str) -> bool:
+    host = (host or "").lower()
+    return any(host == suffix or host.endswith("." + suffix) for suffix in DOUYIN_HOST_SUFFIXES)
+
+
+def is_douyin_share_url(url: str) -> bool:
+    host = hostname(url)
+    return bool(host) and is_douyin_host(host)
+
 
 def parse_source_url(url: str) -> dict[str, str]:
     """把创作者自己粘贴的分享链接拆成引用字段。
@@ -22,15 +50,10 @@ def parse_source_url(url: str) -> dict[str, str]:
         raw = "https://" + raw
 
     parsed = urlparse(raw)
-    host = (parsed.netloc or "").lower()
+    host = hostname(raw)
     path = parsed.path or ""
 
-    allowed = (
-        "douyin.com",
-        "iesdouyin.com",
-        "douyinvod.com",
-    )
-    if not any(host == d or host.endswith("." + d) for d in allowed):
+    if not is_douyin_host(host):
         return {"source_url": url.strip(), "douyin_id": "", "kind": "external"}
 
     match = _VIDEO_ID.search(path)

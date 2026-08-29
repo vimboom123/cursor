@@ -23,6 +23,27 @@ def test_web_seed_search_ask_and_ingest(tmp_path: Path) -> None:
 
         ingest_page = client.get("/ingest")
         assert ingest_page.status_code == 200
+        assert "分享链接带不走口播" in ingest_page.text
+
+        only_link = client.post(
+            "/ingest",
+            data={
+                "title": "只有抖音链接",
+                "transcript": "",
+                "source_url": "https://v.douyin.com/AbC123xy/",
+                "file_url": "",
+                "author": "",
+                "tags": "",
+                "collection": "默认合集",
+                "notes": "",
+            },
+            follow_redirects=False,
+        )
+        assert only_link.status_code == 303
+        assert "hint=douyin" in only_link.headers["location"]
+        explained = client.get(only_link.headers["location"])
+        assert explained.status_code == 200
+        assert "剪映" in explained.text
         posted = client.post(
             "/ingest",
             data={

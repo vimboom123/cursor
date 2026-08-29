@@ -3,12 +3,25 @@
 {% block body %}
 <section class="hero slim">
   <p class="kicker">合规入库</p>
-  <h1>只收你有权使用的素材。</h1>
-  <p class="lede">自己的作品可从相册/创作者中心导出；客户素材需要书面授权。这里不提供解析他人视频链接。</p>
+  <h1>分享链接带不走口播。</h1>
+  <p class="lede">抖音短链里只有作品编号。口播在音轨和字幕里，需要剪映稿、自己导出的成片，或你自己托管的文件直链。</p>
 </section>
+
+<aside class="howto {% if hint == 'douyin' %}flash{% endif %}">
+  <h2>贴了 v.douyin.com 链接？</h2>
+  <ol>
+    <li>剪映打开成片 → 导出 SRT / 口播稿，粘贴到下面。</li>
+    <li>自己的作品：App 里保存到相册，再上传视频。</li>
+    <li>已授权的 <code>.srt</code> / <code>.txt</code> / <code>.mp4</code> 放到你的网盘直链，填「文件链接」。</li>
+  </ol>
+  <p>开放平台的 <code>video.data</code> 只返回标题、封面、播放数，没有转写。第三方解析去水印不要用。</p>
+</aside>
 
 {% if error %}
 <p class="banner bad">{{ error }}</p>
+{% endif %}
+{% if hint == 'douyin' %}
+<p class="banner bad">分享链接不会被拿去拉流。按上面三步拿到文案或成片再入库。</p>
 {% endif %}
 {% if ok %}
 <p class="banner ok">{{ ok }}</p>
@@ -34,8 +47,11 @@
   <label>话题标签（逗号分隔）
     <input name="tags" placeholder="复盘, 效率">
   </label>
-  <label>分享链接（可选，只引用，不下载）
-    <input name="source_url" placeholder="https://www.douyin.com/video/……">
+  <label>抖音分享链接（只引用编号，不下载）
+    <input name="source_url" placeholder="https://v.douyin.com/…… 或 /video/编号">
+  </label>
+  <label>自己的文件直链（.srt / .txt / .mp4，不是抖音域名）
+    <input name="file_url" placeholder="https://your-bucket.example/talk.srt">
   </label>
   <label>口播稿或 SRT
     <textarea name="transcript" rows="10" placeholder="粘贴剪映导出的字幕，或口播原文。有时间轴会自动保留。"></textarea>

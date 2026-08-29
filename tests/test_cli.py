@@ -44,3 +44,19 @@ def test_cli_ingest_from_file(tmp_path: Path) -> None:
     video = store.list_videos()[0]
     assert video.douyin_id == "Hello12"
     store.close()
+
+
+def test_cli_rejects_douyin_only_link(tmp_path: Path, capsys) -> None:
+    rc = main(
+        [
+            "--data",
+            str(tmp_path),
+            "ingest",
+            "--title",
+            "只有链接",
+            "--url",
+            "https://v.douyin.com/AbC123xy/",
+        ]
+    )
+    assert rc == 1
+    assert "拿不到口播" in capsys.readouterr().err

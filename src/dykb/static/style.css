@@ -166,6 +166,22 @@ button {
 .banner { padding: 0.7rem 0.9rem; }
 .banner.bad { background: #f3d2c4; }
 .banner.ok { background: #dce8c8; }
+.howto {
+  max-width: 720px;
+  background: #fffdf8;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--ember);
+  padding: 0.9rem 1.1rem 0.4rem;
+  margin: 0 0 1.4rem;
+}
+.howto.flash {
+  box-shadow: 0 0 0 3px rgba(181, 64, 27, 0.22);
+}
+.howto ol { padding-left: 1.2rem; }
+.howto code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86em;
+}
 .empty { color: var(--muted); }
 .answer pre {
   white-space: pre-wrap;

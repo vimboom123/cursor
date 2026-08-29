@@ -3,16 +3,16 @@ from __future__ import annotations
 from pathlib import Path
 
 from dykb.chunk import segments_from_plain
-from dykb.douyin import parse_source_url
+from dykb.douyin import is_douyin_share_url, parse_source_url
+from dykb.errors import DouyinLinkError, IngestError
+from dykb.fetch import fetch_user_file
 from dykb.knowledge import extract_cards, summarize
 from dykb.media import extract_wav, probe_duration_ms
 from dykb.models import Segment, VideoRecord
 from dykb.store import Store, file_sha256, new_id, now_iso
 from dykb.textutil import parse_srt
 
-
-class IngestError(ValueError):
-    pass
+__all__ = ["IngestError", "DouyinLinkError", "ingest"]
 
 
 def ingest(
@@ -23,16 +23,33 @@ def ingest(
     video_path: Path | None = None,
     author: str = "",
     source_url: str = "",
+    file_url: str = "",
     tags: list[str] | None = None,
     notes: str = "",
     collection: str = "默认合集",
     asr: object | None = None,
+    allow_private_urls: bool = False,
 ) -> VideoRecord:
     title = (title or "").strip()
     transcript = (transcript or "").strip()
+    file_url = (file_url or "").strip()
     if not title:
         raise IngestError("标题不能为空")
+
+    if file_url:
+        fetched = fetch_user_file(
+            file_url,
+            store.data_dir / "uploads",
+            allow_private=allow_private_urls,
+        )
+        if fetched.kind == "transcript":
+            transcript = transcript or fetched.text
+        else:
+            video_path = video_path or fetched.path
+
     if not transcript and video_path is None:
+        if is_douyin_share_url(source_url) or is_douyin_share_url(file_url):
+            raise DouyinLinkError(source_url or file_url)
         raise IngestError("需要口播文案，或上传已授权的视频文件")
 
     sha = file_sha256(video_path) if video_path else ""
