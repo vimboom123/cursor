@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}知识台 · 口播库{% endblock %}
+{% block body %}
+<section class="hero">
+  <p class="kicker">方法先于工具</p>
+  <h1>把口播切成能找回的知识。</h1>
+  <p class="lede">一条抖音视频里通常叠了四层信息：标题话题、口播、画面字、你补的笔记。入库后按句子检索，追问时回到原片时间戳。</p>
+</section>
+
+<section class="stats">
+  <div class="stat"><b>{{ stats.videos }}</b><span>条口播</span></div>
+  <div class="stat"><b>{{ stats.cards }}</b><span>张知识卡片</span></div>
+  <div class="stat"><b>{{ stats.segments }}</b><span>个带时间切片</span></div>
+</section>
+
+<section class="grid">
+  <div>
+    <h2>合集里的口播</h2>
+    {% if not videos %}
+      <p class="empty">还是空的。去入库页贴一段文案，或先看示例。</p>
+    {% endif %}
+    <ul class="reels">
+      {% for v in videos %}
+      <li>
+        <a href="/videos/{{ v.id }}">
+          <span class="reel-meta">{{ v.collection }} · {{ v.duration_ms | ts }}</span>
+          <strong>{{ v.title }}</strong>
+          <p>{{ v.summary }}</p>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div>
+    <h2>刚抽出的卡片</h2>
+    <ol class="cards">
+      {% for card, title in cards %}
+      <li class="card kind-{{ card.kind }}">
+        <span class="chip">{{ kind_label.get(card.kind, card.kind) }}</span>
+        <a href="/videos/{{ card.video_id }}">{{ card.body }}</a>
+        <cite>{{ title }} · {{ card.start_ms | ts }}</cite>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{% endblock %}

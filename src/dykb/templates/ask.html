@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}追问 · 口播库{% endblock %}
+{% block body %}
+<section class="hero slim">
+  <p class="kicker">有出处才算答案</p>
+  <h1>追问会引用入库的原句。</h1>
+  <p class="lede">没有大模型也能先用抽取式回答。之后若要接自己的模型，把命中片段当上下文即可。</p>
+</section>
+<form class="ask-form" action="/ask" method="get">
+  <input name="q" value="{{ q }}" placeholder="例如：抖音视频怎么建立知识库" autofocus>
+  <button type="submit">追问</button>
+</form>
+{% if answer %}
+<section class="answer">
+  <pre>{{ answer.text }}</pre>
+  {% if answer.citations %}
+  <h2>出处</h2>
+  <ol class="hits">
+    {% for h in answer.citations %}
+    <li>
+      <a href="/videos/{{ h.video_id }}">
+        <span class="reel-meta">{{ h.title }} · {{ h.start_ms | ts }}</span>
+        <p>{{ h.text }}</p>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+  {% endif %}
+</section>
+{% endif %}
+{% endblock %}
