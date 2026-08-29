@@ -246,7 +246,8 @@ class Store:
         try:
             card_rows = self.conn.execute(
                 """
-                SELECT c.*, v.title AS title,
+                SELECT c.id, c.video_id, c.kind, c.body, c.start_ms,
+                       v.title AS video_title,
                        bm25(card_fts) AS rank
                 FROM card_fts
                 JOIN cards c ON c.id = card_fts.card_id
@@ -262,7 +263,7 @@ class Store:
         for row in card_rows:
             hit = SearchHit(
                 video_id=row["video_id"],
-                title=row["title"],
+                title=row["video_title"],
                 segment_id=row["id"],
                 start_ms=row["start_ms"],
                 end_ms=row["start_ms"],

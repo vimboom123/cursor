@@ -23,6 +23,7 @@ def test_ingest_transcript_search_and_ask(tmp_path: Path) -> None:
     hits = store.search("知识卡片")
     assert hits
     assert any("知识卡片" in h.text for h in hits)
+    assert all(h.title == "测试口播" for h in hits)
     answer = ask(store, "什么是知识卡片")
     assert "知识卡片" in answer.text
     assert answer.citations
@@ -43,6 +44,9 @@ def test_seed_is_idempotent(tmp_path: Path) -> None:
     assert store.stats()["videos"] == 3
     hits = store.search("复盘")
     assert hits
+    answer = ask(store, "抖音视频怎么建立知识库")
+    assert answer.citations
+    assert "知识库" in answer.citations[0].title
     store.close()
 
 
