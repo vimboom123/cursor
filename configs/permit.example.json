@@ -1,0 +1,13 @@
+{
+  "permit_id": "PERMIT-DEMO-001",
+  "operator": "演示操作员",
+  "organization": "信息中心（演示）",
+  "purpose": "授权范围内的办事事项列表采集，只读，不回写业务系统",
+  "allowed_url_prefixes": [
+    "file://",
+    "http://127.0.0.1",
+    "http://localhost"
+  ],
+  "expires_at": "2027-12-31T23:59:59+08:00",
+  "read_only": true
+}
