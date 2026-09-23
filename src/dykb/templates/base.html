@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}口播库{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="spine" aria-hidden="true"></div>
+  <header class="top">
+    <a class="brand" href="/">
+      <span class="seal">口</span>
+      <span>
+        <strong>口播库</strong>
+        <em>已授权短视频 → 可追问知识</em>
+      </span>
+    </a>
+    <nav>
+      <a href="/" class="{{ 'on' if nav=='home' else '' }}">知识台</a>
+      <a href="/ingest" class="{{ 'on' if nav=='ingest' else '' }}">入库</a>
+      <a href="/search" class="{{ 'on' if nav=='search' else '' }}">检索</a>
+      <a href="/ask" class="{{ 'on' if nav=='ask' else '' }}">追问</a>
+    </nav>
+  </header>
+  <main>
+    {% block body %}{% endblock %}
+  </main>
+  <footer>
+    只处理你自己导出或已获授权的素材。分享链接仅作引用，不会去抖音拉流。
+  </footer>
+</body>
+</html>

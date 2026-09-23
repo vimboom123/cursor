@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ video.title }} · 口播库{% endblock %}
+{% block body %}
+<article class="video-head">
+  <p class="kicker">{{ video.collection }}{% if video.douyin_id %} · 编号 {{ video.douyin_id }}{% endif %}</p>
+  <h1>{{ video.title }}</h1>
+  <p class="lede">{{ video.summary }}</p>
+  <p class="meta">
+    {{ video.author or "未署名" }} · {{ video.duration_ms | ts }}
+    {% if video.tags %} · {{ video.tags | join(" / ") }}{% endif %}
+  </p>
+  {% if video.source_url %}
+  <p class="meta">引用：{{ video.source_url }}</p>
+  {% endif %}
+</article>
+
+<section class="grid">
+  <div>
+    <h2>知识卡片</h2>
+    <ol class="cards">
+      {% for card in cards %}
+      <li class="card kind-{{ card.kind }}">
+        <span class="chip">{{ kind_label.get(card.kind, card.kind) }}</span>
+        <p>{{ card.body }}</p>
+        <cite>{{ card.start_ms | ts }}</cite>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+  <div>
+    <h2>带时间戳的口播</h2>
+    <ol class="timeline">
+      {% for seg in segments %}
+      <li>
+        <time>{{ seg.start_ms | ts }}</time>
+        <p>{{ seg.text }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{% endblock %}

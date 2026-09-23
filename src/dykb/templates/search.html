@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}检索 · 口播库{% endblock %}
+{% block body %}
+<section class="hero slim">
+  <p class="kicker">先找回原句</p>
+  <h1>按口播检索，而不是按记忆猜。</h1>
+</section>
+<form class="ask-form" action="/search" method="get">
+  <input name="q" value="{{ q }}" placeholder="例如：知识卡片是指什么" autofocus>
+  <button type="submit">检索</button>
+</form>
+{% if q %}
+  {% if not hits %}
+    <p class="empty">没有命中。换个口播里的原词试试，或先入库。</p>
+  {% else %}
+    <ol class="hits">
+      {% for h in hits %}
+      <li>
+        <a href="/videos/{{ h.video_id }}">
+          <span class="reel-meta">{{ h.title }} · {{ h.start_ms | ts }} · {{ h.kind }}</span>
+          <p>{{ h.text }}</p>
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+{% endif %}
+{% endblock %}
